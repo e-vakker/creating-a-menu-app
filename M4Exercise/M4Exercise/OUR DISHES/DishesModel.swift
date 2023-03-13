@@ -14,15 +14,15 @@ class DishesModel: ObservableObject {
         
         do {
             let (data, _) = try await urlSession.data(from: url)
-            // let fullMenu = try JSONDecoder().decode(...)
-            // menuItems = ...
-            
-            
+            let fullMenu = try JSONDecoder().decode(JSONMenu.self, from: data)
+            menuItems = fullMenu.menu
             // populate Core Data
             Dish.deleteAll(coreDataContext)
             Dish.createDishesFrom(menuItems:menuItems, coreDataContext)
         }
-        catch { }
+        catch (let error) {
+            print(error.localizedDescription)
+        }
     }
 }
 
