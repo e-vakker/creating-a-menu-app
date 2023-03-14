@@ -8,13 +8,22 @@ import SwiftUI
 
 struct DisplayDish: View {
     @ObservedObject private var dish:Dish
+    
     init(_ dish:Dish) {
         self.dish = dish
     }
     
     var body: some View {        
-        EmptyView()
-        .contentShape(Rectangle()) // keep this code
+        HStack {
+            Text(dish.name ?? "")
+                .font(.system(size: 16, weight: .bold))
+            Spacer()
+            Text("\(dish.formatPrice())")
+                .monospaced()
+                .foregroundColor(.gray)
+                .font(.callout)
+        }
+        .contentShape(Rectangle())
     }
 }
 

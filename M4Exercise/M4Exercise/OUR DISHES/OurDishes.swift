@@ -29,9 +29,14 @@ struct OurDishes: View {
                     sortDescriptors: buildSortDescriptors()) {
                         (dishes: [Dish]) in
                         List {
-                            // Code for the list enumeration here
+                            ForEach(dishes) { dish in
+                                DisplayDish(dish)
+                                    .onTapGesture {
+                                        showAlert.toggle()
+                                    }
+                            }
                         }
-                        // add the search bar modifier here
+                        .searchable(text: $searchText, prompt: "search...")
                     }
             }
             
@@ -40,7 +45,7 @@ struct OurDishes: View {
             // into complex steps that run out of the scope of this
             // course, so, this is a hack, to bring the list up
             // try to comment this line and see what happens.
-            .padding(.top, -10)//
+            //.padding(.top, -10)//
             
             .alert("Order placed, thanks!",
                    isPresented: $showAlert) {
@@ -57,16 +62,20 @@ struct OurDishes: View {
             
         }
     }
-}
-
-struct OurDishes_Previews: PreviewProvider {
-    static var previews: some View {
-        OurDishes()
+    
+    func buildPredicate() -> NSPredicate {
+        return searchText == "" ? NSPredicate(value: true) : NSPredicate(format: "name CONTAINS[cd] %@", searchText)
+    }
+    
+    func buildSortDescriptors() -> [NSSortDescriptor] {
+        return [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare))]
     }
 }
 
 
 
-
-
-
+struct OurDishes_Previews: PreviewProvider {
+    static var previews: some View {
+        OurDishes().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+    }
+}
